@@ -159,7 +159,7 @@ resource customScript 'Microsoft.Compute/virtualMachines/extensions@2021-07-01' 
     typeHandlerVersion: '2.1'
     settings: {
       fileUris: [
-        'https://raw.githubusercontent.com/bcosden/nva/master/LinuxRouter.sh'
+        'https://raw.githubusercontent.com/bcosden/nva/master/EnableIcmp.ps1'
       ]
     }
     protectedSettings: {
