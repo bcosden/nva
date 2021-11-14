@@ -1,0 +1,43 @@
+SPOKE1 ---------------------------------+-------------- SPOKE2
+Address: 10.2.0.0/16			|		Address: 10.3.0.0/16
+default subnet: 10.2.0.0/24		|		default: 10.3.0.0/24
+VM: 10.2.0.4				|		VM: 10.3.0.4
+					|
+					|
+					|
+				HUB-VNET ---------------------------------------------------------------------- NVA-VNET
+				Address:10.0.0.0/16								Address: 10.4.0.0/24
+				AzureFirewallSubnet: 10.0.100.0/26						default: 10.4.0.0/24
+				AzureFirewallManagementSubnet: 10.0.101.0/26					VM: 10.4.0.4
+				GatewaySubnet: 10.0.102.0/26
+				main: 10.0.0.0/24
+				VM: 10.0.0.4
+				Firewall IP: 10.0.100.4
+				Firewall PIP: 52.170.148.218
+					|
+					|
+				HUB-VPN-GW ------------------------ RRAS-NET-LOCAL
+				ASN: 65502			    ASN: 65510		
+				PIP: 52.149.187.176		    PIP: 52.188.78.59
+				Peer: 10.0.102.62		    Peer: 10.1.100.62
+					|
+					|
+					|
+				RRAS-VPN-GW ------------------------ HUB-VPN-LOCAL
+				ASN: 65510			     ASN: 65502
+				PIP: 52.188.78.59		     PIP: 52.149.187.176
+				Peer: 10.1.100.62		     Peer: 10.0.102.62
+					|
+					|
+				RRAS-VNET
+				Address: 10.1.0.0/16
+				AzureBastionSubnet: 10.1.200.0/26
+				GatewaySubnet: 10.1.100.0/26
+				main: 10.1.0.0/24
+				VM: 10.1.0.4
+
+
+
+
+
+
