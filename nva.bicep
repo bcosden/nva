@@ -31,7 +31,8 @@ resource nvaVnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
 }
 
 resource spokeVnetPeering 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-03-01' = {
-  name: 'nvaVnet/hubVnet'
+  parent: nvaVnet
+  name: 'hubVnet'
   properties: {
     allowVirtualNetworkAccess: true
     allowForwardedTraffic: true
@@ -148,7 +149,7 @@ resource vmNva 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   }
 }
 
-resource symbolicname 'Microsoft.Compute/virtualMachines/extensions@2021-07-01' = {
+resource customScript 'Microsoft.Compute/virtualMachines/extensions@2021-07-01' = {
   name: 'enableIPForwarding'
   location: location
   parent: vmNva
@@ -159,7 +160,7 @@ resource symbolicname 'Microsoft.Compute/virtualMachines/extensions@2021-07-01' 
     typeHandlerVersion: '2.1'
     settings: {
       fileUris: [
-        'uri(deployment().properties.templateLink.uri, 'LinuxRouter.sh')'
+        'https://raw.githubusercontent.com/bcosden/nva/master/LinuxRouter.sh'
       ]
     }
     protectedSettings: {

@@ -132,7 +132,7 @@ resource fwpublicPip 'Microsoft.Network/publicIPAddresses@2020-11-01' = {
 
 resource hubFirewallPolicy 'Microsoft.Network/firewallPolicies@2021-03-01' = {
   name: 'hubFirewallPolicy'
-  location: 'eastus'
+  location: location
   dependsOn: [
     hubVnetGw
   ]
@@ -141,6 +141,133 @@ resource hubFirewallPolicy 'Microsoft.Network/firewallPolicies@2021-03-01' = {
       tier: 'Standard'
     }
   threatIntelMode: 'Alert'
+  }
+}
+
+resource hubFwPolicyApplicationGroup 'Microsoft.Network/firewallPolicies/ruleCollectionGroups@2021-03-01' = {
+  parent: hubFirewallPolicy
+  name: 'DefaultApplicationRuleCollectionGroup'
+  dependsOn: [
+    hubFwPolicyNetworkGroup
+  ]
+  properties: {
+    priority: 300
+    ruleCollections: [
+      {
+        ruleCollectionType: 'FirewallPolicyFilterRuleCollection'
+        action: {
+          type: 'Allow'
+        }
+        rules: [
+          {
+            ruleType: 'ApplicationRule'
+            name: 'internet'
+            protocols: [
+              {
+                protocolType: 'Http'
+                port: 80
+              }
+              {
+                protocolType: 'Https'
+                port: 443
+              }
+            ]
+            fqdnTags: []
+            webCategories: []
+            targetFqdns: [
+              '*'
+            ]
+            targetUrls: []
+            terminateTLS: false
+            sourceAddresses: [
+              '*'
+            ]
+            destinationAddresses: []
+            sourceIpGroups: []
+          }
+        ]
+        name: 'apprule01'
+        priority: 300
+      }
+    ]
+  }
+}
+
+resource hubFwPolicyNetworkGroup 'Microsoft.Network/firewallPolicies/ruleCollectionGroups@2021-03-01' = {
+  parent: hubFirewallPolicy
+  name: 'DefaultNetworkRuleCollectionGroup'
+  properties: {
+    priority: 200
+    ruleCollections: [
+      {
+        ruleCollectionType: 'FirewallPolicyFilterRuleCollection'
+        action: {
+          type: 'Allow'
+        }
+        rules: [
+          {
+            ruleType: 'NetworkRule'
+            name: 'ICMP'
+            ipProtocols: [
+              'ICMP'
+            ]
+            sourceAddresses: [
+              '*'
+            ]
+            sourceIpGroups: []
+            destinationAddresses: [
+              '10.0.0.0/8'
+            ]
+            destinationIpGroups: []
+            destinationFqdns: []
+            destinationPorts: [
+              '*'
+            ]
+          }
+          {
+            ruleType: 'NetworkRule'
+            name: 'ssh'
+            ipProtocols: [
+              'TCP'
+            ]
+            sourceAddresses: [
+              '*'
+            ]
+            sourceIpGroups: []
+            destinationAddresses: [
+              '10.0.0.0/16'
+            ]
+            destinationIpGroups: []
+            destinationFqdns: []
+            destinationPorts: [
+              '22'
+            ]
+          }
+          {
+            ruleType: 'NetworkRule'
+            name: 'rdp'
+            ipProtocols: [
+              'TCP'
+            ]
+            sourceAddresses: [
+              '*'
+            ]
+            sourceIpGroups: []
+            destinationAddresses: [
+              '10.2.0.0/16'
+              '10.3.0.0/16'
+            ]
+            destinationIpGroups: []
+            destinationFqdns: []
+            destinationPorts: [
+              '3389'
+            ]
+          }
+        ]
+        name: 'collection01'
+        priority: 100
+      }
+    ]
   }
 }
 

@@ -101,13 +101,13 @@ resource vmSpoke01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     }
     storageProfile: {
       imageReference: {
-        publisher: 'Canonical'
-        offer: 'UbuntuServer'
-        sku: '18.04-LTS'
+        publisher: 'MicrosoftWindowsServer'
+        offer: 'WindowsServer'
+        sku: '2019-Datacenter'
         version: 'latest'
       }
       osDisk: {
-        osType: 'Linux'
+        osType: 'Windows'
         name: 'vmSpoke01_OsDisk_${guid('vmSpoke01', resourceGroup().id)}'
         createOption: 'FromImage'
         caching: 'ReadWrite'
@@ -144,6 +144,26 @@ resource vmSpoke01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       bootDiagnostics: {
         enabled: true
       }
+    }
+  }
+}
+
+resource customScript 'Microsoft.Compute/virtualMachines/extensions@2021-07-01' = {
+  name: 'enableIcmp'
+  location: location
+  parent: vmSpoke01
+  properties: {
+    autoUpgradeMinorVersion: true
+    publisher: 'Microsoft.Azure.Extensions'
+    type: 'CustomScript'
+    typeHandlerVersion: '2.1'
+    settings: {
+      fileUris: [
+        'https://raw.githubusercontent.com/bcosden/nva/master/LinuxRouter.sh'
+      ]
+    }
+    protectedSettings: {
+      commandToExecute: 'powershell EnableIcmp.ps1'
     }
   }
 }

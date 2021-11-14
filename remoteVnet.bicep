@@ -178,13 +178,13 @@ resource vmRemotetestvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     }
     storageProfile: {
       imageReference: {
-        publisher: 'Canonical'
-        offer: 'UbuntuServer'
-        sku: '18.04-LTS'
+        publisher: 'MicrosoftWindowsServer'
+        offer: 'WindowsServer'
+        sku: '2019-Datacenter'
         version: 'latest'
       }
       osDisk: {
-        osType: 'Linux'
+        osType: 'Windows'
         name: 'vmRemotetestvm_OsDisk_${guid('vmRemotetestvm', resourceGroup().id)}'
         createOption: 'FromImage'
         caching: 'ReadWrite'
