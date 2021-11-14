@@ -31,7 +31,8 @@ resource spoke02Vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
 }
 
 resource spokeVnetPeering 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-03-01' = {
-  name: 'spoke02Vnet/hubVnet'
+  parent: spoke02Vnet
+  name: 'hubVnet'
   properties: {
     allowVirtualNetworkAccess: true
     allowForwardedTraffic: true
