@@ -149,6 +149,7 @@ resource hubFwPolicyApplicationGroup 'Microsoft.Network/firewallPolicies/ruleCol
   name: 'DefaultApplicationRuleCollectionGroup'
   dependsOn: [
     hubFwPolicyNetworkGroup
+    hubFirewall
   ]
   properties: {
     priority: 300

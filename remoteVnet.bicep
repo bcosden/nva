@@ -191,7 +191,7 @@ resource vmRemotetestvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
         managedDisk: {
           storageAccountType: 'Premium_LRS'
         }
-        diskSizeGB: 30
+        diskSizeGB: 127
       }
       dataDisks: []
     }
@@ -199,11 +199,10 @@ resource vmRemotetestvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       computerName: 'vmRemotetestvm'
       adminUsername: adminusername
       adminPassword: adminpassword
-      linuxConfiguration: {
-        disablePasswordAuthentication: false
+      windowsConfiguration: {
         provisionVMAgent: true
         patchSettings: {
-          patchMode: 'ImageDefault'
+          patchMode: 'AutomaticByOS'
           assessmentMode: 'ImageDefault'
         }
       }
@@ -221,6 +220,21 @@ resource vmRemotetestvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       bootDiagnostics: {
         enabled: true
       }
+    }
+  }
+}
+
+resource customScript 'Microsoft.Compute/virtualMachines/extensions@2021-07-01' = {
+  name: 'enableIcmp'
+  location: location
+  parent: vmRemotetestvm
+  properties: {
+    autoUpgradeMinorVersion: true
+    publisher: 'Microsoft.Compute'
+    type: 'CustomScriptExtension'
+    typeHandlerVersion: '1.10'
+    settings: {
+      commandToExecute: 'netsh.exe advfirewall firewall set rule group="File and Printer Sharing" new enable=yes'
     }
   }
 }

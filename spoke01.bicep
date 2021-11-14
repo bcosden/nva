@@ -31,7 +31,8 @@ resource spoke01Vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
 }
 
 resource spokeVnetPeering 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-03-01' = {
-  name: 'spoke01Vnet/hubVnet'
+  parent: spoke01Vnet
+  name: 'hubVnet'
   properties: {
     allowVirtualNetworkAccess: true
     allowForwardedTraffic: true
@@ -114,7 +115,7 @@ resource vmSpoke01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
         managedDisk: {
           storageAccountType: 'Premium_LRS'
         }
-        diskSizeGB: 30
+        diskSizeGB: 127
       }
       dataDisks: []
     }
@@ -122,11 +123,10 @@ resource vmSpoke01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       computerName: 'vmSpoke01'
       adminUsername: adminusername
       adminPassword: adminpassword
-      linuxConfiguration: {
-        disablePasswordAuthentication: false
+      windowsConfiguration: {
         provisionVMAgent: true
         patchSettings: {
-          patchMode: 'ImageDefault'
+          patchMode: 'AutomaticByOS'
           assessmentMode: 'ImageDefault'
         }
       }
@@ -154,16 +154,11 @@ resource customScript 'Microsoft.Compute/virtualMachines/extensions@2021-07-01' 
   parent: vmSpoke01
   properties: {
     autoUpgradeMinorVersion: true
-    publisher: 'Microsoft.Azure.Extensions'
-    type: 'CustomScript'
-    typeHandlerVersion: '2.1'
+    publisher: 'Microsoft.Compute'
+    type: 'CustomScriptExtension'
+    typeHandlerVersion: '1.10'
     settings: {
-      fileUris: [
-        'https://raw.githubusercontent.com/bcosden/nva/master/EnableIcmp.ps1'
-      ]
-    }
-    protectedSettings: {
-      commandToExecute: 'powershell EnableIcmp.ps1'
+      commandToExecute: 'netsh.exe advfirewall firewall set rule group="File and Printer Sharing" new enable=yes'
     }
   }
 }
